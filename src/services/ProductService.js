@@ -111,10 +111,18 @@ const getDetailsProduct = async (id) => {
         };
     }
 };
-const getAllProduct = async () => {
+const getAllProduct = async (limit = 0, page = 0) => {
     try {
+        const totalProduct = await GET_DB().collection('products').countDocuments();
 
-        const allProduct = await GET_DB().collection('products').find().toArray()
+        // Áp dụng limit và skip trước khi chuyển cursor sang mảng
+        const allProduct = await GET_DB().collection('products')
+            .find()
+            .limit(limit)
+            .skip(limit * page)
+            .toArray();
+        const totalPage = Math.ceil(totalProduct / limit)
+        const pageCurrent = page + 1
         console.log(allProduct);
 
         if (!allProduct) {  // Kiểm tra nếu người dùng không tồn tại
@@ -126,7 +134,10 @@ const getAllProduct = async () => {
         return {
             status: StatusCodes.OK,
             message: 'Get product success',
-            data: allProduct // Trả về `value` chứa dữ liệu cập nhật
+            data: allProduct, // Trả về `value` chứa dữ liệu cập nhật
+            totalProduct: totalProduct,
+            pageCurrent: pageCurrent,
+            totalPage: totalPage
         };
 
 
