@@ -53,8 +53,8 @@ const getDetailsProduct = async (req, res) => {
 }
 const getAllProduct = async (req, res) => {
     try {
-        const { limit, page } = req.query
-        const response = await ProductService.getAllProduct(Number(limit), Number(page))
+        const { limit, page, sort, filter } = req.query
+        const response = await ProductService.getAllProduct(Number(limit), Number(page), sort, filter)
         return res.status(StatusCodes.OK).json(response)
     } catch (error) {
         return res.status(StatusCodes.NOT_FOUND).json({ message: error })

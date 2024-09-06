@@ -111,10 +111,38 @@ const getDetailsProduct = async (id) => {
         };
     }
 };
-const getAllProduct = async (limit = 0, page = 0) => {
+const getAllProduct = async (limit = 8, page = 0, sort, filter) => {
     try {
-        const totalProduct = await GET_DB().collection('products').countDocuments();
 
+        const totalProduct = await GET_DB().collection('products').countDocuments();
+        if (filter) {
+            const label = filter[0]
+            const allProductFilter = await GET_DB().collection('products')
+                .find({ [label]: { '$regex': filter[1] } })
+                .limit(limit)
+                .skip(limit * page)
+                .toArray();
+            return {
+                status: StatusCodes.OK,
+                message: 'Get product success',
+                data: allProductFilter, // Trả về `value` chứa dữ liệu cập nhật           
+            };
+        }
+        if (sort) {
+            const objectSort = {}
+            objectSort[sort[1]] = sort[0]
+            const allProductSort = await GET_DB().collection('products')
+                .find()
+                .limit(limit)
+                .skip(limit * page)
+                .sort(objectSort)
+                .toArray();
+            return {
+                status: StatusCodes.OK,
+                message: 'Get product success',
+                data: allProductSort, // Trả về `value` chứa dữ liệu cập nhật           
+            };
+        }
         // Áp dụng limit và skip trước khi chuyển cursor sang mảng
         const allProduct = await GET_DB().collection('products')
             .find()
@@ -123,7 +151,6 @@ const getAllProduct = async (limit = 0, page = 0) => {
             .toArray();
         const totalPage = Math.ceil(totalProduct / limit)
         const pageCurrent = page + 1
-        console.log(allProduct);
 
         if (!allProduct) {  // Kiểm tra nếu người dùng không tồn tại
             return {
