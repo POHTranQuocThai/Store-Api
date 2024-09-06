@@ -1,5 +1,6 @@
 import { StatusCodes } from "http-status-codes"
 import { UserService } from "../services/UserService.js"
+import { JwtService } from "../services/jwtService.js"
 
 
 const createNew = async (req, res) => {
@@ -71,6 +72,15 @@ const getDetailsUser = async (req, res) => {
         return res.status(StatusCodes.NOT_FOUND).json({ message: error })
     }
 }
+const refreshToken = async (req, res) => {
+    try {
+        const refreshToken = req.headers.token.split(' ')[1]
+        const response = await JwtService.refreshToken(refreshToken)
+        return res.status(StatusCodes.OK).json(response)
+    } catch (error) {
+        return res.status(StatusCodes.NOT_FOUND).json({ message: error })
+    }
+}
 const loginUser = async (req, res) => {
     try {
         console.log(req.body)
@@ -101,5 +111,6 @@ export const UserController = {
     updateUser,
     deleteUser,
     getAllUser,
-    getDetailsUser
+    getDetailsUser,
+    refreshToken
 }

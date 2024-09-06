@@ -14,5 +14,7 @@ Router.route('/delete-user/:id')
 Router.route('/getAll')
     .get(authMiddleware.auth, UserController.getAllUser)
 Router.route('/get-details/:id')
-    .get(authMiddleware.auth, UserController.getDetailsUser)
+    .get(authMiddleware.authUser, UserController.getDetailsUser)
+Router.route('/refresh-token')
+    .post(UserController.refreshToken)
 export const UserRouter = Router

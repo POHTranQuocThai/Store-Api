@@ -85,6 +85,12 @@ const getAllUser = async () => {
     try {
 
         const allUser = await GET_DB().collection('users').find().toArray()
+        if (!allUser) {  // Kiểm tra nếu người dùng không tồn tại
+            return {
+                status: StatusCodes.NOT_FOUND,
+                message: 'The user is not defined'
+            };
+        }
         return {
             status: StatusCodes.OK,
             message: 'Get user success',
@@ -104,12 +110,17 @@ const getDetailsUser = async (id) => {
     try {
 
         const detailUser = await GET_DB().collection('users').findOne({ _id: new ObjectId(id) })
+        if (!detailUser) {  // Kiểm tra nếu người dùng không tồn tại
+            return {
+                status: StatusCodes.NOT_FOUND,
+                message: 'The user is not defined'
+            };
+        }
         return {
             status: StatusCodes.OK,
             message: 'Get detail user success',
             data: detailUser // Trả về `value` chứa dữ liệu cập nhật
         };
-
 
     } catch (error) {
         console.error('Error during update:', error);  // Log lỗi nếu có
