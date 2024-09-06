@@ -1,7 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
 import bcrypt from 'bcryptjs';
 import { GET_DB } from '../config/mongodb.js';  // Đảm bảo rằng GET_DB được import chính xác
-
+import { JwtService } from './jwtService.js';
+import { ObjectId } from 'mongodb';
+import { UserModel } from '../models/UserModel.js';
 
 const createNew = async (data) => {
     try {
@@ -12,7 +14,113 @@ const createNew = async (data) => {
     }
 };
 
-const loginUser = async (data, res) => {
+const updateUser = async (id, data) => {
+    try {
+
+        // Tìm người dùng bằng ID
+        const checkUser = await GET_DB().collection('users').findOne({ _id: new ObjectId(id) });
+
+        if (!checkUser) {  // Kiểm tra nếu người dùng không tồn tại
+            return {
+                status: StatusCodes.NOT_FOUND,
+                message: 'The user is not defined'
+            };
+        }
+
+        // Cập nhật người dùng
+        const updatedUser = await GET_DB().collection('users').findOneAndUpdate(
+            { _id: new ObjectId(id) }, // Query to find the user by id
+            { $set: data },            // Update the user data
+            { returnDocument: 'after' } // Option to return the updated document
+        );
+
+        // Kiểm tra nếu cập nhật không thành công
+        return {
+            status: StatusCodes.OK,
+            message: 'Update user success',
+            data: updatedUser // Trả về `value` chứa dữ liệu cập nhật
+        };
+
+    } catch (error) {
+        console.error('Error during update:', error);  // Log lỗi nếu có
+        return {
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+            message: error.message
+        };
+    }
+};
+const deleteUser = async (id) => {
+    try {
+
+        // Tìm người dùng bằng ID
+        const checkUser = await GET_DB().collection('users').findOne({ _id: new ObjectId(id) });
+
+        if (!checkUser) {  // Kiểm tra nếu người dùng không tồn tại
+            return {
+                status: StatusCodes.NOT_FOUND,
+                message: 'The user is not defined'
+            };
+        }
+
+        const deletedUser = await GET_DB().collection('users').findOneAndDelete(
+            { _id: new ObjectId(id) }, // Query to find the user by id
+        );
+
+        // Kiểm tra nếu cập nhật không thành công
+        return {
+            status: StatusCodes.OK,
+            message: 'Delete user success',
+            //data: deletedUser // Trả về `value` chứa dữ liệu cập nhật
+        };
+
+    } catch (error) {
+        console.error('Error during update:', error);  // Log lỗi nếu có
+        return {
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+            message: error.message
+        };
+    }
+};
+const getAllUser = async () => {
+    try {
+
+        const allUser = await GET_DB().collection('users').find().toArray()
+        return {
+            status: StatusCodes.OK,
+            message: 'Get user success',
+            data: allUser // Trả về `value` chứa dữ liệu cập nhật
+        };
+
+
+    } catch (error) {
+        console.error('Error during update:', error);  // Log lỗi nếu có
+        return {
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+            message: error.message
+        };
+    }
+};
+const getDetailsUser = async (id) => {
+    try {
+
+        const detailUser = await GET_DB().collection('users').findOne({ _id: new ObjectId(id) })
+        return {
+            status: StatusCodes.OK,
+            message: 'Get detail user success',
+            data: detailUser // Trả về `value` chứa dữ liệu cập nhật
+        };
+
+
+    } catch (error) {
+        console.error('Error during update:', error);  // Log lỗi nếu có
+        return {
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+            message: error.message
+        };
+    }
+};
+
+const loginUser = async (data) => {
     try {
         const { email, password } = data;  // Lấy email và password từ data
 
@@ -34,16 +142,20 @@ const loginUser = async (data, res) => {
                 message: 'The password is incorrect'
             };
         }
-        const access_Token = await genneralAccessToken({
+
+        // Tạo access và refresh token
+        const access_Token = await JwtService.generalAccessToken({
             id: checkUser._id,
             isAdmin: checkUser.isAdmin
-        })
-        const refresh_Token = await genneralRefreshToken({
+        });
+        const refresh_Token = await JwtService.generalRefreshToken({
             id: checkUser._id,
             isAdmin: checkUser.isAdmin
-        })
+        });
+
         console.log('access-token', access_Token);
-        // Nếu mật khẩu khớp, trả về thông tin người dùng
+
+        // Nếu mật khẩu khớp, trả về thông tin người dùng và token
         return {
             status: StatusCodes.OK,
             message: 'Success',
@@ -62,5 +174,9 @@ const loginUser = async (data, res) => {
 
 export const UserService = {
     createNew,
-    loginUser
+    loginUser,
+    updateUser,
+    deleteUser,
+    getAllUser,
+    getDetailsUser
 };

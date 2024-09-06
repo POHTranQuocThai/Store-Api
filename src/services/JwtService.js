@@ -1,22 +1,25 @@
 import jwt from 'jsonwebtoken'
-const genneralAccessToken = async (payload) => {
+import dotenv from 'dotenv'
+dotenv.config()
+
+const generalAccessToken = async (payload) => {
     console.log(payload);
 
     const access_Token = jwt.sign({
         payload
-    }, 'access_Token', { expiresIn: '1h' })
+    }, process.env.ACCESS_TOKEN, { expiresIn: '1h' })
     return access_Token
 }
-const genneralRefreshToken = async (payload) => {
+const generalRefreshToken = async (payload) => {
     console.log(payload);
 
-    const access_Token = jwt.sign({
+    const refresh_Token = jwt.sign({
         payload
-    }, 'refresh_Token', { expiresIn: '365d' })
-    return access_Token
+    }, process.env.REFRESH_TOKEN, { expiresIn: '365d' })
+    return refresh_Token
 }
 
 export const JwtService = {
-    genneralAccessToken,
-    genneralRefreshToken
+    generalAccessToken,
+    generalRefreshToken
 }
