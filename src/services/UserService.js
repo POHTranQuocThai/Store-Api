@@ -134,12 +134,11 @@ const getDetailsUser = async (id) => {
 const loginUser = async (data) => {
     try {
         const { email, password } = data;  // Lấy email và password từ data
-
         // Tìm người dùng bằng email
         const checkUser = await GET_DB().collection('users').findOne({ email: email });
         if (!checkUser) {  // Kiểm tra nếu người dùng không tồn tại
             return {
-                status: StatusCodes.NOT_FOUND,
+                status: 'ERR',
                 message: 'The user is not defined'
             };
         }
@@ -149,29 +148,32 @@ const loginUser = async (data) => {
         console.log('Password match result:', comparePassword);  // Đảm bảo `comparePassword` được log ra
         if (!comparePassword) {  // Nếu mật khẩu không khớp
             return {
-                status: StatusCodes.UNAUTHORIZED,
+                status: 'ERR',
                 message: 'The password is incorrect'
             };
         }
 
         // Tạo access và refresh token
-        const access_Token = await JwtService.generalAccessToken({
-            id: checkUser._id,
-            isAdmin: checkUser.isAdmin
-        });
-        const refresh_Token = await JwtService.generalRefreshToken({
+        const access_token = await JwtService.generalAccessToken({
             id: checkUser._id,
             isAdmin: checkUser.isAdmin
         });
 
-        console.log('access-token', access_Token);
+
+
+        const refresh_token = await JwtService.generalRefreshToken({
+            id: checkUser._id,
+            isAdmin: checkUser.isAdmin
+        });
+
+        console.log('retoken', refresh_token);
 
         // Nếu mật khẩu khớp, trả về thông tin người dùng và token
         return {
             status: StatusCodes.OK,
             message: 'Success',
-            access_Token,
-            refresh_Token
+            access_token,
+            refresh_token
         };
 
     } catch (error) {

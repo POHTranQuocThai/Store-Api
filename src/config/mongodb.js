@@ -4,7 +4,6 @@ import { MongoClient, ServerApiVersion } from 'mongodb'
 import { env } from './environment.js'
 
 //Khởi tạo một đối tượng trelloDatabaseInstall ban đầu là null
-console.log(env.MONGODB_URL);
 
 let trelloDatabaseInstall = null
 const mongoClientInstance = new MongoClient(env.MONGODB_URL, {

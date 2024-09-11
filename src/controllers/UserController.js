@@ -3,14 +3,14 @@ import { UserService } from "../services/UserService.js"
 import { JwtService } from "../services/jwtService.js"
 
 
+
 const createNew = async (req, res) => {
     try {
-        console.log(req.body)
-        const { name, email, password, confirmPassword, phone } = req.body
+        const { email, password, confirmPassword } = req.body
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const isCheckEmail = regex.test(email)
         //const existEmail = await GET_DB().collection('users').findOne({ email: email })
-        if (!name || !email || !password || !confirmPassword || !phone) {
+        if (!email || !password || !confirmPassword) {
             return res.status(StatusCodes.OK).json({ status: 'ERR', message: 'The input is required' })
         } else if (!isCheckEmail) {
             return res.status(StatusCodes.OK).json({ status: 'ERR', message: 'The Email is invalid' })
@@ -74,8 +74,16 @@ const getDetailsUser = async (req, res) => {
 }
 const refreshToken = async (req, res) => {
     try {
-        const refreshToken = req.headers.token.split(' ')[1]
-        const response = await JwtService.refreshToken(refreshToken)
+
+        console.log(req.cookies);
+        const refreshToken = req.cookies.refresh_token
+        if (!refreshToken) {
+            return res.status(StatusCodes.OK).json({
+                status: 'ERR',
+                message: 'The token is required'
+            })
+        }
+        const response = JwtService.refreshToken(refreshToken)
         return res.status(StatusCodes.OK).json(response)
     } catch (error) {
         return res.status(StatusCodes.NOT_FOUND).json({ message: error })
@@ -83,25 +91,26 @@ const refreshToken = async (req, res) => {
 }
 const loginUser = async (req, res) => {
     try {
+
         console.log(req.body)
-        const { name, email, password, confirmPassword, phone } = req.body
+        const { email, password } = req.body
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const isCheckEmail = regex.test(email)
-        //const existEmail = await GET_DB().collection('users').findOne({ email: email })
-        if (!name || !email || !password || !confirmPassword || !phone) {
+        if (!email || !password) {
             return res.status(StatusCodes.OK).json({ status: 'ERR', message: 'The input is required' })
         } else if (!isCheckEmail) {
             return res.status(StatusCodes.OK).json({ status: 'ERR', message: 'The Email is invalid' })
-        } else if (password !== confirmPassword) {
-            return res.status(StatusCodes.OK).json({ status: 'ERR', message: 'The password is equal confirm password' })
         }
-        // else if (existEmail) {
-        //     return res.status(StatusCodes.OK).json({ status: 'ERR', message: 'The email is already' })
-        // }
         const loginUser = await UserService.loginUser(req.body)
-        return res.status(StatusCodes.OK).json(loginUser)
+        const { refresh_token, ...newloginUser } = loginUser
+        res.cookie('refresh_token', refresh_token, {
+            httpOnly: true,
+            Secure: true
+        })
+
+        return res.status(StatusCodes.OK).json(newloginUser)
     } catch (error) {
-        return res.status(StatusCodes.NOT_FOUND).json({ message: error })
+        throw error
     }
 }
 

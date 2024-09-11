@@ -20,10 +20,8 @@ const auth = (req, res, next) => {
                 return res.status(StatusCodes.FORBIDDEN).json({ message: 'Invalid token' });
             }
 
-            const { payload } = user;
-
             // Kiểm tra quyền admin
-            if (payload?.isAdmin) {
+            if (user?.isAdmin) {
                 next();
             } else {
                 return res.status(StatusCodes.FORBIDDEN).json({ message: 'User is not authorized' });
@@ -47,13 +45,23 @@ const authUser = (req, res, next) => {
         // Xác thực token
         jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
             if (err) {
+
                 return res.status(StatusCodes.FORBIDDEN).json({ message: 'Invalid token' });
             }
-
-            const { payload } = user;
-
+            console.log('user', user);
+            // Log để kiểm tra
+            console.log('user in token', user);
+            console.log('userId from params', userId);
             // Kiểm tra quyền admin
-            if (payload?.isAdmin || payload?.id === userId) {
+            console.log(user?.isAdmin);
+            console.log(user?.id === userId);
+
+            const { payload } = user
+            console.log('áds', payload?.isAdmin);
+            console.log(payload?.id === userId);
+
+
+            if (user?.isAdmin || user?.id === userId) {
                 next();
             } else {
                 return res.status(StatusCodes.FORBIDDEN).json({ message: 'User is not authorized' });

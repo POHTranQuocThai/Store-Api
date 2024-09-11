@@ -1,15 +1,17 @@
 import express from 'express'
 import AsyncExitHook from 'async-exit-hook'
-//import { APIs_V1 } from './routes/v1/index.js'
 import bodyParser from 'body-parser'
 import { ClOSE_DB, CONNECT_DB } from './config/mongodb.js'
 import { APIs_V1 } from './routes/v1/index.js'
-
+import cors from 'cors'
+import cookieParser from 'cookie-parser'
 
 const START_SERVER = async () => {
     const app = express()
     const port = process.env.PORT || 5000
+    app.use(cors())
     app.use(bodyParser.json())
+    app.use(cookieParser())
     app.use('/v1', APIs_V1)
 
     app.listen(port, () => {

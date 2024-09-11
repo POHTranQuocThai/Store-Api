@@ -6,10 +6,10 @@ import { StatusCodes } from 'http-status-codes';
 const USER_COLLECTION_NAME = 'users'
 
 const USER_COLLECTION_SCHEMA = Joi.object({
-    name: Joi.string().required(),
+    name: Joi.string(),
     email: Joi.string().email().required(), // Xác nhận định dạng email hợp lệ
     password: Joi.string().required(),
-    confirmPassword: Joi.string().valid(Joi.ref('password')).required(), // Xác nhận confirmPassword khớp với password
+    confirmPassword: Joi.string().valid(Joi.ref('password')), // Xác nhận confirmPassword khớp với password
     isAdmin: Joi.boolean().default(false), // Đặt giá trị mặc định là false
     phone: Joi.string().optional(), // Thay đổi từ number thành string và không bắt buộc
     access_token: Joi.string().optional(),
