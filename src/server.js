@@ -8,8 +8,11 @@ import cookieParser from 'cookie-parser'
 
 const START_SERVER = async () => {
     const app = express()
-    const port = process.env.PORT || 5000
-    app.use(cors())
+    const port = process.env.LOCAL_DEV_APP_PORT || 3001
+    app.use(cors({
+        origin: 'http://localhost:3000', // Địa chỉ frontend
+        credentials: true, // Cho phép gửi cookie
+    }));
     app.use(bodyParser.json())
     app.use(cookieParser())
     app.use('/v1', APIs_V1)

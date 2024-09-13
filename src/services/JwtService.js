@@ -18,44 +18,50 @@ const generalRefreshToken = async (payload) => {
     }, process.env.REFRESH_TOKEN, { expiresIn: '365d' })
     return refresh_token
 }
-const refreshToken = (token) => {
+const refreshToken = async (token) => {
     return new Promise((resolve, reject) => {
         try {
             jwt.verify(token, process.env.REFRESH_TOKEN, async (err, user) => {
                 if (err) {
                     return reject({
                         status: 'ERR',
-                        message: 'The authentication failed',
+                        message: err.message || 'Invalid token',
                     });
                 }
 
                 console.log('user', user);
 
-                const { payload } = user;
-                const access_token = await JwtService.generalAccessToken({
-                    id: payload?.id,
-                    isAdmin: payload?.isAdmin,
-                });
-                console.log('access', access_token);
+                try {
+                    // Tạo access token mới
+                    const access_token = await JwtService.generalAccessToken({
+                        id: user?.id,
+                        isAdmin: user?.isAdmin
+                    });
 
-                resolve({
-                    status: StatusCodes.OK,
-                    message: 'Success',
-                    access_token,
-                })
-            })
+                    console.log('access', access_token);
 
+                    return resolve({
+                        status: StatusCodes.OK,
+                        message: 'Success',
+                        access_token
+                    });
+                } catch (generateError) {
+                    return reject({
+                        status: 'ERR',
+                        message: generateError.message || 'Failed to generate access token',
+                    });
+                }
+            });
         } catch (error) {
-            console.error('Error during update:', error);
-            return {
-                status: StatusCodes.INTERNAL_SERVER_ERROR,
-                message: error.message,
-            };
+            console.error('Error during token verification:', error);
+            return reject({
+                status: 'ERR',
+                message: error.message || 'Internal server error',
+            });
         }
     });
-
-
 };
+
 
 export const JwtService = {
     generalAccessToken,

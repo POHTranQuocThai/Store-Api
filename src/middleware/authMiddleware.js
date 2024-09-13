@@ -46,20 +46,8 @@ const authUser = (req, res, next) => {
         jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
             if (err) {
 
-                return res.status(StatusCodes.FORBIDDEN).json({ message: 'Invalid token' });
+                return res.status(StatusCodes.FORBIDDEN).json({ message: err });
             }
-            console.log('user', user);
-            // Log để kiểm tra
-            console.log('user in token', user);
-            console.log('userId from params', userId);
-            // Kiểm tra quyền admin
-            console.log(user?.isAdmin);
-            console.log(user?.id === userId);
-
-            const { payload } = user
-            console.log('áds', payload?.isAdmin);
-            console.log(payload?.id === userId);
-
 
             if (user?.isAdmin || user?.id === userId) {
                 next();

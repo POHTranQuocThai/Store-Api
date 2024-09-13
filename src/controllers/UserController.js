@@ -75,7 +75,7 @@ const getDetailsUser = async (req, res) => {
 const refreshToken = async (req, res) => {
     try {
 
-        console.log(req.cookies);
+        console.log('req.cookies', req.cookies.refresh_token);
         const refreshToken = req.cookies.refresh_token
         if (!refreshToken) {
             return res.status(StatusCodes.OK).json({
@@ -83,7 +83,9 @@ const refreshToken = async (req, res) => {
                 message: 'The token is required'
             })
         }
-        const response = JwtService.refreshToken(refreshToken)
+        const response = await JwtService.refreshToken(refreshToken)
+        console.log('response', response);
+
         return res.status(StatusCodes.OK).json(response)
     } catch (error) {
         return res.status(StatusCodes.NOT_FOUND).json({ message: error })
@@ -105,7 +107,8 @@ const loginUser = async (req, res) => {
         const { refresh_token, ...newloginUser } = loginUser
         res.cookie('refresh_token', refresh_token, {
             httpOnly: true,
-            Secure: true
+            secure: false,
+            sameSite: 'strict'
         })
 
         return res.status(StatusCodes.OK).json(newloginUser)
