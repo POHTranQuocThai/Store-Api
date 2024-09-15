@@ -35,6 +35,8 @@ const updateUser = async (req, res) => {
             return res.status(StatusCodes.OK).json({ message: 'The user is required' })
         }
         const response = await UserService.updateUser(userId, data)
+        console.log('response', response);
+
         return res.status(StatusCodes.OK).json(response)
     } catch (error) {
         return res.status(StatusCodes.NOT_FOUND).json({ message: error })
@@ -116,6 +118,18 @@ const loginUser = async (req, res) => {
         throw error
     }
 }
+const logOutUser = async (req, res) => {
+    try {
+        res.clearCookie('refresh_token', {
+            path: '/' // Đảm bảo rằng cookie được xóa trên toàn bộ trang web
+        });
+        return res.status(StatusCodes.OK).json({
+            massage: 'Logout successfully'
+        })
+    } catch (error) {
+        throw error
+    }
+}
 
 export const UserController = {
     createNew,
@@ -124,5 +138,5 @@ export const UserController = {
     deleteUser,
     getAllUser,
     getDetailsUser,
-    refreshToken
+    refreshToken, logOutUser
 }

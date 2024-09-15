@@ -12,8 +12,8 @@ const USER_COLLECTION_SCHEMA = Joi.object({
     confirmPassword: Joi.string().valid(Joi.ref('password')), // Xác nhận confirmPassword khớp với password
     isAdmin: Joi.boolean().default(false), // Đặt giá trị mặc định là false
     phone: Joi.string().optional(), // Thay đổi từ number thành string và không bắt buộc
-    access_token: Joi.string().optional(),
-    refresh_token: Joi.string().optional(),
+    address: Joi.string().optional(),
+    avatar: Joi.string().optional(),
     createdAt: Joi.date().default(() => new Date()),
     updatedAt: Joi.date().default(() => new Date())
 });
