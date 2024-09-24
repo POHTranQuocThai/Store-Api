@@ -1,5 +1,6 @@
 import Joi from "joi";
 import { GET_DB } from "../config/mongodb.js";
+import { StatusCodes } from "http-status-codes";
 
 
 const PRODUCT_COLLECTION_NAME = 'products'
@@ -10,6 +11,8 @@ const PRODUCT_COLLECTION_SCHEMA = Joi.object({
     price: Joi.number().required().default(0),  // Đặt giá trị mặc định là 0 nếu không được cung cấp
     countInStock: Joi.number(),  // Chuyển đổi từ number sang string nếu bạn muốn hỗ trợ số điện thoại
     rating: Joi.number(),
+    discount: Joi.number(),
+    selled: Joi.number(),
     description: Joi.string()
 })
 const validateBeforeCreate = async (data) => {

@@ -16,7 +16,6 @@ const createNew = async (data) => {
 
 const updateUser = async (id, data) => {
     try {
-
         // Tìm người dùng bằng ID
         const checkUser = await GET_DB().collection('users').findOne({ _id: new ObjectId(id) });
 
@@ -26,7 +25,6 @@ const updateUser = async (id, data) => {
                 message: 'The user is not defined'
             };
         }
-
         // Cập nhật người dùng
         const updatedUser = await GET_DB().collection('users').findOneAndUpdate(
             { _id: new ObjectId(id) }, // Query to find the user by id
@@ -51,7 +49,6 @@ const updateUser = async (id, data) => {
 };
 const deleteUser = async (id) => {
     try {
-
         // Tìm người dùng bằng ID
         const checkUser = await GET_DB().collection('users').findOne({ _id: new ObjectId(id) });
 
@@ -61,16 +58,35 @@ const deleteUser = async (id) => {
                 message: 'The user is not defined'
             };
         }
-
         const deletedUser = await GET_DB().collection('users').findOneAndDelete(
             { _id: new ObjectId(id) }, // Query to find the user by id
         );
-
         // Kiểm tra nếu cập nhật không thành công
         return {
             status: StatusCodes.OK,
             message: 'Delete user success',
             //data: deletedUser // Trả về `value` chứa dữ liệu cập nhật
+        };
+
+    } catch (error) {
+        console.error('Error during update:', error);  // Log lỗi nếu có
+        return {
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+            message: error.message
+        };
+    }
+};
+const deleteMany = async (ids) => {
+    try {
+        const objectIds = ids.map(id => new ObjectId(id)); // Chuyển đổi các ID thành ObjectId
+        const deletedUser = await GET_DB().collection('users').deleteMany(
+            { _id: { $in: objectIds } }// Query to find the user by id          
+        )
+        // Kiểm tra nếu cập nhật không thành công
+        return {
+            status: StatusCodes.OK,
+            message: 'Delete prooduct success',
+            data: deletedUser // Trả về `value` chứa dữ liệu cập nhật
         };
 
     } catch (error) {
@@ -191,5 +207,6 @@ export const UserService = {
     updateUser,
     deleteUser,
     getAllUser,
-    getDetailsUser
+    getDetailsUser,
+    deleteMany
 };

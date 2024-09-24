@@ -19,4 +19,6 @@ Router.route('/get-details/:id')
     .get(authMiddleware.authUser, UserController.getDetailsUser)
 Router.route('/refresh-token')
     .post(UserController.refreshToken)
-export const UserRouter = Router
+    Router.route('/delete-many')
+    .delete(authMiddleware.auth, UserController.deleteMany)
+export const UserRouter = Router 

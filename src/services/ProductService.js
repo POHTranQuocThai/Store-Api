@@ -14,7 +14,8 @@ const createProduct = async (data) => {
                 message: 'The name of product is already'
             }
         }
-        const newProduct = await ProductModel.createProduct(data);
+        const newProduct = await ProductModel.createProduct(data)
+        return newProduct
     } catch (error) {
         throw error;
     }
@@ -22,9 +23,7 @@ const createProduct = async (data) => {
 const updateProduct = async (id, data) => {
     try {
 
-        // Tìm người dùng bằng ID
         const checkProduct = await GET_DB().collection('products').findOne({ _id: new ObjectId(id) });
-
         if (!checkProduct) {  // Kiểm tra nếu người dùng không tồn tại
             return {
                 status: StatusCodes.NOT_FOUND,
@@ -38,7 +37,6 @@ const updateProduct = async (id, data) => {
             { $set: data },            // Update the user data
             { returnDocument: 'after' } // Option to return the updated document
         );
-
         // Kiểm tra nếu cập nhật không thành công
         return {
             status: StatusCodes.OK,
@@ -56,10 +54,8 @@ const updateProduct = async (id, data) => {
 };
 const deleteProduct = async (id) => {
     try {
-
         // Tìm người dùng bằng ID
         const checkProduct = await GET_DB().collection('products').findOne({ _id: new ObjectId(id) });
-
         if (!checkProduct) {  // Kiểm tra nếu người dùng không tồn tại
             return {
                 status: StatusCodes.NOT_FOUND,
@@ -72,6 +68,28 @@ const deleteProduct = async (id) => {
             { _id: new ObjectId(id) }// Query to find the user by id          
         )
 
+        // Kiểm tra nếu cập nhật không thành công
+        return {
+            status: StatusCodes.OK,
+            message: 'Delete prooduct success',
+            data: deletedProduct // Trả về `value` chứa dữ liệu cập nhật
+        };
+
+    } catch (error) {
+        console.error('Error during update:', error);  // Log lỗi nếu có
+        return {
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+            message: error.message
+        };
+    }
+};
+const deleteMany = async (ids) => {
+    try {
+        // Cập nhật người dùng
+        const objectIds = ids.map(id => new ObjectId(id)); // Chuyển đổi các ID thành ObjectId
+        const deletedProduct = await GET_DB().collection('products').deleteMany(
+            { _id: { $in: objectIds } }// Query to find the user by id          
+        )
         // Kiểm tra nếu cập nhật không thành công
         return {
             status: StatusCodes.OK,
@@ -182,5 +200,6 @@ export const ProductService = {
     updateProduct,
     deleteProduct,
     getDetailsProduct,
-    getAllProduct
+    getAllProduct,
+    deleteMany
 };

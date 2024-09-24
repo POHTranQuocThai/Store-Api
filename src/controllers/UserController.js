@@ -3,7 +3,6 @@ import { UserService } from "../services/UserService.js"
 import { JwtService } from "../services/jwtService.js"
 
 
-
 const createNew = async (req, res) => {
     try {
         const { email, password, confirmPassword } = req.body
@@ -51,6 +50,19 @@ const deleteUser = async (req, res) => {
             return res.status(StatusCodes.OK).json({ message: 'The user is required' })
         }
         const response = await UserService.deleteUser(userId)
+        return res.status(StatusCodes.OK).json(response)
+    } catch (error) {
+        return res.status(StatusCodes.NOT_FOUND).json({ message: error })
+    }
+}
+const deleteMany = async (req, res) => {
+    try {
+        const ids = req.body.ids
+
+        if (!ids) {
+            return res.status(StatusCodes.OK).json({ message: 'The ids is required' })
+        }
+        const response = await UserController.deleteMany(ids)
         return res.status(StatusCodes.OK).json(response)
     } catch (error) {
         return res.status(StatusCodes.NOT_FOUND).json({ message: error })
@@ -106,6 +118,8 @@ const loginUser = async (req, res) => {
             return res.status(StatusCodes.OK).json({ status: 'ERR', message: 'The Email is invalid' })
         }
         const loginUser = await UserService.loginUser(req.body)
+        console.log('login', loginUser);
+
         const { refresh_token, ...newloginUser } = loginUser
         res.cookie('refresh_token', refresh_token, {
             httpOnly: true,
@@ -138,5 +152,6 @@ export const UserController = {
     deleteUser,
     getAllUser,
     getDetailsUser,
-    refreshToken, logOutUser
+    refreshToken, logOutUser,
+    deleteMany
 }
