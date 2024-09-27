@@ -15,5 +15,6 @@ Router.route('/getAll')
     .get(ProductController.getAllProduct)
 Router.route('/delete-many')
     .post(authMiddleware.auth, ProductController.deleteMany)
-
+Router.route('/get-all-type')
+    .get(ProductController.getAllType)
 export const ProductRouter = Router

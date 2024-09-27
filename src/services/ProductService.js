@@ -194,12 +194,32 @@ const getAllProduct = async (limit = 8, page = 0, sort, filter) => {
         };
     }
 };
+export const getAllType = async () => {
+    try {
+        const result = await GET_DB().collection('products').aggregate([
+            { $group: { _id: "$type" } } // Gom nhóm theo type
+        ]).toArray();
 
+        // Chuyển đổi kết quả thành một mảng giá trị từ _id
+        const allType = result.map(item => item._id);
+        return {
+            message: 'Get all type success!',
+            data: allType
+        }
+    } catch (error) {
+        console.error('Error during get all type:', error);  // Log lỗi nếu có
+        return {
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+            message: error.message
+        };
+    }
+}
 export const ProductService = {
     createProduct,
     updateProduct,
     deleteProduct,
     getDetailsProduct,
     getAllProduct,
-    deleteMany
+    deleteMany,
+    getAllType
 };

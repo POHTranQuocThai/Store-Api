@@ -90,11 +90,20 @@ const getAllProduct = async (req, res) => {
         return res.status(StatusCodes.NOT_FOUND).json({ message: error })
     }
 }
+const getAllType = async (req, res) => {
+    try {
+        const response = await ProductService.getAllType()
+        return res.status(StatusCodes.OK).json(response)
+    } catch (error) {
+        return res.status(StatusCodes.NOT_FOUND).json({ message: error })
+    }
+}
 export const ProductController = {
     createProduct,
     updateProduct,
     deleteProduct,
     getDetailsProduct,
     getAllProduct,
-    deleteMany
+    deleteMany,
+    getAllType
 }

@@ -34,7 +34,6 @@ const updateUser = async (req, res) => {
             return res.status(StatusCodes.OK).json({ message: 'The user is required' })
         }
         const response = await UserService.updateUser(userId, data)
-        console.log('response', response);
 
         return res.status(StatusCodes.OK).json(response)
     } catch (error) {
