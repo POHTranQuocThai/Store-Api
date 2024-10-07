@@ -4,22 +4,19 @@ import { ProductService } from "../services/ProductService.js"
 
 const createProduct = async (req, res) => {
     try {
-        const { name, image, type, price, countInStock, rating, description } = req.body;
+        const { name, image, type, price, countInStock, rating, description, discount } = req.body;
 
         // Kiểm tra các trường bắt buộc
-        if (!name || !image || !type || !price || !countInStock || !rating || !description) {
+        if (!name || !image || !type || !price || !countInStock || !rating || !description || !discount) {
             return res.status(StatusCodes.BAD_REQUEST).json({ status: 'ERR', message: 'The input is required' });
         }
 
         // Gọi hàm tạo sản phẩm và log ra sản phẩm
         const newProduct = await ProductService.createProduct(req.body);
-        console.log('Product Created:', newProduct);
-
         return res.status(StatusCodes.CREATED).json(newProduct);
     } catch (error) {
         // Log chi tiết lỗi
         console.error('Error creating product:', error);
-
         // Trả về mã lỗi chi tiết hơn nếu cần
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             status: 'ERR',

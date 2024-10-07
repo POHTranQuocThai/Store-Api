@@ -4,7 +4,6 @@ import { ClOSE_DB, CONNECT_DB } from './config/mongodb.js'
 import { APIs_V1 } from './routes/v1/index.js'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
-import bodyParser from 'body-parser'
 
 const START_SERVER = async () => {
     const app = express()

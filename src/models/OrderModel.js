@@ -1,5 +1,8 @@
 import Joi from "joi"
 import { ObjectId } from "mongodb"
+import { GET_DB } from "../config/mongodb.js";
+import { StatusCodes } from "http-status-codes";
+
 
 
 const ORDER_COLLECTION_NAME = 'orders'
@@ -30,7 +33,7 @@ const ORDER_COLLECTION_SCHEMA = Joi.object({
     paymentMethod: Joi.string().required(),
     itemsPrice: Joi.number().required(),
     shippingPrice: Joi.number().required(),
-    taxPrice: Joi.number().required(),
+    taxPrice: Joi.number().optional(),
     totalPrice: Joi.number().required(),
     user: Joi.string()
         .custom((value, helpers) => {
@@ -46,14 +49,24 @@ const ORDER_COLLECTION_SCHEMA = Joi.object({
     isDelivered: Joi.boolean().default(false),
     deliveredAt: Joi.date().optional()
 })
-const createNew = (data) => {
-    try {
-
-    } catch (error) {
-
-    }
+const validateBeforeCreate = async (data) => {
+    return await ORDER_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false });
 }
+const createOrder = async (data) => {
+    try {
+        // Validate dữ liệu
+        const validData = await validateBeforeCreate(data);
+
+        // Chèn dữ liệu vào cơ sở dữ liệu
+        const createOrder = await GET_DB().collection(ORDER_COLLECTION_NAME).insertOne(validData);
+
+        return { status: StatusCodes.OK, message: 'success' };
+    } catch (error) {
+        console.error('Error creating order:', error);
+        throw error;
+    }
+};
 
 export const OrderModel = {
-    createNew
+    createOrder
 }

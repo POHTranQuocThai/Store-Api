@@ -6,7 +6,7 @@ import { ObjectId } from 'mongodb';
 
 const createProduct = async (data) => {
     try {
-        const { name, image, type, price, countInStock, rating, description } = data
+        const { name } = data
         const checkNameProduct = await GET_DB().collection('product').findOne({ name: name })
         if (checkNameProduct !== null) {
             return {
@@ -199,10 +199,10 @@ export const getAllType = async () => {
         const result = await GET_DB().collection('products').aggregate([
             { $group: { _id: "$type" } } // Gom nhóm theo type
         ]).toArray();
-
         // Chuyển đổi kết quả thành một mảng giá trị từ _id
         const allType = result.map(item => item._id);
         return {
+            status: StatusCodes.OK,
             message: 'Get all type success!',
             data: allType
         }
