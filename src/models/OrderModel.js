@@ -60,7 +60,7 @@ const createOrder = async (data) => {
         // Chèn dữ liệu vào cơ sở dữ liệu
         const createOrder = await GET_DB().collection(ORDER_COLLECTION_NAME).insertOne(validData);
 
-        return { status: StatusCodes.OK, message: 'success' };
+        return { status: StatusCodes.OK, message: 'success', data: createOrder };
     } catch (error) {
         console.error('Error creating order:', error);
         throw error;

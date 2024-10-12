@@ -12,7 +12,7 @@ const PRODUCT_COLLECTION_SCHEMA = Joi.object({
     countInStock: Joi.number(),  // Chuyển đổi từ number sang string nếu bạn muốn hỗ trợ số điện thoại
     rating: Joi.number(),
     discount: Joi.number(),
-    selled: Joi.number(),   
+    selled: Joi.number().optional().default(0),
     description: Joi.string()
 })
 const validateBeforeCreate = async (data) => {

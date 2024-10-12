@@ -6,15 +6,24 @@ import { ObjectId } from 'mongodb';
 
 const createProduct = async (data) => {
     try {
-        const { name } = data
-        const checkNameProduct = await GET_DB().collection('product').findOne({ name: name })
+        const { name, image, type, countInStock, price, rating, description, discount } = data;
+        const checkNameProduct = await GET_DB().collection('products').findOne({ name: name })
         if (checkNameProduct !== null) {
             return {
                 status: StatusCodes.OK,
                 message: 'The name of product is already'
             }
         }
-        const newProduct = await ProductModel.createProduct(data)
+        const newProduct = await ProductModel.createProduct({
+            name,
+            image,
+            type,
+            countInStock: Number(countInStock),
+            price,
+            rating,
+            description,
+            discount: Number(discount)
+        })
         return newProduct
     } catch (error) {
         throw error;

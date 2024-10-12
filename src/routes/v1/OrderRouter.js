@@ -5,4 +5,6 @@ const Router = express.Router()
 
 Router.route('/create')
     .post(authMiddleware.authUser, OrderController.createOrder)
+Router.route('/get-detail-order/:id')
+    .get(authMiddleware.authUser, OrderController.getDetailsOrder)
 export const OrderRouter = Router

@@ -23,7 +23,16 @@ const createOrder = async (req, res) => {
         });
     }
 }
-
+const getDetailsOrder = async (req, res) => {
+    try {
+        const detailOrderId = req.params.id
+        const response = await OrderService.getDetailsOrder(detailOrderId)
+        return res.status(StatusCodes.OK).json(response)
+    } catch (error) {
+        return res.status(StatusCodes.NOT_FOUND).json({ message: error })
+    }
+}
 export const OrderController = {
     createOrder,
-}
+    getDetailsOrder
+}   
